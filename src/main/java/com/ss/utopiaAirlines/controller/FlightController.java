@@ -1,6 +1,9 @@
 package com.ss.utopiaAirlines.controller;
 
 import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,7 +72,9 @@ public class FlightController
 					int day = Integer.parseInt(spl[1]);
 					int year = Integer.parseInt(spl[2]);
 					
-					ts = Timestamp.valueOf(year + "-" + month + "-" + day + " 00:00:00");
+					Instant instant = LocalDateTime.of(year, month, day, 0, 0).atZone(ZoneOffset.UTC.normalized()).toInstant();
+					
+					ts = new Timestamp(instant.toEpochMilli());
 				}
 			}
 			catch(Exception exc)

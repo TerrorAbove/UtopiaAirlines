@@ -17,13 +17,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 @Repository
 public interface FlightDao extends JpaRepository<Flight, Integer>
 {
-	List<Flight> findByArriveCityIdAndDepartCityIdAndDepartTimeGreaterThanAndDepartTimeLessThan(int arriveCityId, int departCityId, Timestamp departTime, Timestamp nextDay);
+	List<Flight> findByArriveCityIdAndDepartCityIdAndDepartTimeBetween(int arriveCityId, int departCityId, Timestamp departTime, Timestamp nextDay);
 	
-	List<Flight> findByDepartCityIdAndDepartTimeGreaterThanAndDepartTimeLessThan(int departCityId, Timestamp departTime, Timestamp nextDay);
-	List<Flight> findByArriveCityIdAndDepartTimeGreaterThanAndDepartTimeLessThan(int arriveCityId, Timestamp departTime, Timestamp nextDay);
+	List<Flight> findByDepartCityIdAndDepartTimeBetween(int departCityId, Timestamp departTime, Timestamp nextDay);
+	List<Flight> findByArriveCityIdAndDepartTimeBetween(int arriveCityId, Timestamp departTime, Timestamp nextDay);
 	List<Flight> findByArriveCityIdAndDepartCityId(int arriveCityId, int departCityId);
 	
-	List<Flight> findByDepartTimeGreaterThanAndDepartTimeLessThan(Timestamp departTime, Timestamp nextDay);
+	List<Flight> findByDepartTimeBetween(Timestamp departTime, Timestamp nextDay);
 	List<Flight> findByArriveCityId(int arriveCityId);
 	List<Flight> findByDepartCityId(int departCityId);
 }

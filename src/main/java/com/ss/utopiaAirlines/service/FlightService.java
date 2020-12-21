@@ -51,7 +51,7 @@ public class FlightService
 			{
 				if(hasDate)
 				{
-					return flightDao.findByArriveCityIdAndDepartCityIdAndDepartTimeGreaterThanAndDepartTimeLessThan(arriveCityId, departCityId, date, ts_next_day);
+					return flightDao.findByArriveCityIdAndDepartCityIdAndDepartTimeBetween(arriveCityId, departCityId, date, ts_next_day);
 				}
 				else
 				{
@@ -62,7 +62,7 @@ public class FlightService
 			{
 				if(hasDate)
 				{
-					return flightDao.findByArriveCityIdAndDepartTimeGreaterThanAndDepartTimeLessThan(arriveCityId, date, ts_next_day);
+					return flightDao.findByArriveCityIdAndDepartTimeBetween(arriveCityId, date, ts_next_day);
 				}
 				else
 				{
@@ -76,7 +76,7 @@ public class FlightService
 			{
 				if(hasDate)
 				{
-					return flightDao.findByDepartCityIdAndDepartTimeGreaterThanAndDepartTimeLessThan(departCityId, date, ts_next_day);
+					return flightDao.findByDepartCityIdAndDepartTimeBetween(departCityId, date, ts_next_day);
 				}
 				else
 				{
@@ -87,7 +87,7 @@ public class FlightService
 			{
 				if(hasDate)
 				{
-					return flightDao.findByDepartTimeGreaterThanAndDepartTimeLessThan(date, ts_next_day);
+					return flightDao.findByDepartTimeBetween(date, ts_next_day);
 				}
 				else
 				{
