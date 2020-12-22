@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.ss.utopiaAirlines.dao.FlightDao;
 import com.ss.utopiaAirlines.entity.Flight;
+import com.ss.utopiaAirlines.exception.CreateUpdateDeleteException;
 
 /**
  * 
@@ -97,20 +98,35 @@ public class FlightService
 		}
 	}
 	
-	/*
 	public Flight createFlight(Flight flight) throws CreateUpdateDeleteException
 	{
-		if(flightDao.existsById(flight.getFlightId()))
-			throw new CreateUpdateDeleteException("Cannot create a flight that already exists: flightId="+flight.getFlightId());
+		final int ORIG_ID = flight.getFlightId();
 		
-		return flightDao.save(flight);
+		int id_diff = 0;
+		boolean found = false;
+		
+		while(id_diff < Short.MAX_VALUE)//try up to 32767 spaces after flightId for vacant spot
+		{
+			if(flightDao.existsById(ORIG_ID + id_diff))
+				id_diff++;
+			else
+			{
+				found = true;
+				break;
+			}
+		}
+		
+		if(found)
+		{
+			flight.setFlightId(ORIG_ID + id_diff);
+			return flightDao.save(flight);
+		}
+		
+		throw new CreateUpdateDeleteException("Could not find vacant flightId for new flight.");
 	}
 	
-	public Flight updateFlight(Flight flight) throws CreateUpdateDeleteException
+	public Flight createOrUpdateFlight(Flight flight)// throws CreateUpdateDeleteException
 	{
-		if(!flightDao.existsById(flight.getFlightId()))
-			throw new CreateUpdateDeleteException("Flight does not exist, cannot update: flightId="+flight.getFlightId());
-		
 		return flightDao.save(flight);
 	}
 	
@@ -121,5 +137,4 @@ public class FlightService
 		
 		flightDao.deleteById(id);
 	}
-	*/
 }

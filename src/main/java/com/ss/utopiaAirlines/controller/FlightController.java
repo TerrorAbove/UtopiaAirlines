@@ -1,5 +1,7 @@
 package com.ss.utopiaAirlines.controller;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -10,14 +12,21 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ss.utopiaAirlines.entity.Flight;
+import com.ss.utopiaAirlines.exception.CreateUpdateDeleteException;
 import com.ss.utopiaAirlines.service.FlightService;
 
 /**
@@ -38,7 +47,7 @@ public class FlightController
 	{
 		Optional<Flight> flight = flightService.getFlightById(flightId);
 		
-		if(flight == null)
+		if(!flight.isPresent())
 		{
 			response.setStatus(HttpStatus.NOT_FOUND.value());
 			return null;
@@ -87,35 +96,42 @@ public class FlightController
 		return flightService.getFlights(arriveCityId, departCityId, ts);//, Sort.by(Direction.ASC, sort), minPrice, maxPrice, showFullFlights);
 	}
 	
-	/*
 	@PostMapping
-	public Flight createFlight(@RequestBody Flight flight, HttpServletResponse response)
+	public ResponseEntity<Flight> postFlight(@RequestBody Flight flight, HttpServletResponse response)
 	{
 		try
 		{
-			return flightService.createFlight(flight);
+			Flight f = flightService.createFlight(flight);
+			return ResponseEntity.created(new URI("/flights/"+f.getFlightId())).body(f);
 		}
 		catch (CreateUpdateDeleteException exc)
 		{
 			System.err.println(exc.getMessage());
-			response.setStatus(HttpStatus.BAD_REQUEST.value());
-			return null;
+			response.setStatus(HttpStatus.CONFLICT.value());
 		}
+		catch (DataIntegrityViolationException dive)
+		{
+			response.setStatus(HttpStatus.BAD_REQUEST.value());
+		}
+		catch (URISyntaxException e)
+		{
+			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+		}
+		return null;
 	}
 	
 	@PutMapping
-	public Flight updateFlight(@RequestBody Flight flight, HttpServletResponse response)
+	public Flight putFlight(@RequestBody Flight flight, HttpServletResponse response)
 	{
 		try
 		{
-			return flightService.updateFlight(flight);
+			return flightService.createOrUpdateFlight(flight);
 		}
-		catch (CreateUpdateDeleteException exc)
+		catch (DataIntegrityViolationException dive)
 		{
-			System.err.println(exc.getMessage());
 			response.setStatus(HttpStatus.BAD_REQUEST.value());
-			return null;
 		}
+		return null;
 	}
 	
 	@DeleteMapping("/{flightId}")
@@ -128,8 +144,7 @@ public class FlightController
 		catch (CreateUpdateDeleteException exc)
 		{
 			System.err.println(exc.getMessage());
-			response.setStatus(HttpStatus.BAD_REQUEST.value());
+			response.setStatus(HttpStatus.NOT_FOUND.value());
 		}
 	}
-	*/
 }
